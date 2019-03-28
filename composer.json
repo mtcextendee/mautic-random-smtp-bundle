@@ -1,0 +1,7 @@
+{
+  "name": "mtcextendee/mautic-random-smtp-bundle",
+  "type": "mautic-plugin",
+  "require": {
+    "mautic/composer-plugin": "^1.0"
+  }
+}
