@@ -74,6 +74,7 @@ class RandomSmtpIntegration extends AbstractIntegration
                     'attr'       => [
                         'class'        => 'form-control',
                         'tooltip'        => 'mautic.random.smtp.smtps.tooltip',
+                        'rows' => 10
                     ],
                     'constraints' => [
                         new Assert\NotBlank(
