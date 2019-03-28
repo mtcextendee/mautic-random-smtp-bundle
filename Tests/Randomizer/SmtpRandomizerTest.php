@@ -24,6 +24,29 @@ use MauticPlugin\MauticRandomSmtpBundle\Swiftmailer\Transport\RandomSmtpTranspor
 class SmtpRandomizerTest extends \PHPUnit_Framework_TestCase
 {
 
+    /**
+     * @return string
+     */
+    private function generateCsvFromArray()
+    {
+        return 'host,username,password,port'."\r\n".'host2,username2,password2,port2'."\r\n".'host3,username3,password3,port3';
+    }
+
+    /**
+     * @return array
+     */
+    private function getConfig()
+    {
+        return [
+            'host' => 0,
+            'username' => 1,
+            'password' => 2,
+            'port' => 3,
+            'auth_mode' => 4,
+            'encryption' => 5,
+        ];
+    }
+
     public function testIntegrationNotExist()
     {
         $this->expectException(IntegrationDisableException::class);
@@ -126,7 +149,6 @@ class SmtpRandomizerTest extends \PHPUnit_Framework_TestCase
         $smtpRandomizerIntegration = $this->createMock(RandomSmtpIntegration::class);
         $smtpRandomizerIntegration->method('getIntegrationSettings')->willReturn($integrationMock);
 
-        //host2;,username2,password2,port2";
         $smtpRandomizerIntegration->method('mergeConfigToFeatureSettings')->willReturn(
              array_merge(['smtps'=> $this->generateCsvFromArray()], $this->getConfig())
         );
@@ -147,25 +169,5 @@ class SmtpRandomizerTest extends \PHPUnit_Framework_TestCase
             }
         }
         $this->assertGreaterThan(1, $uniqueResultsCount);
-    }
-
-    /**
-     * @return string
-     */
-    private function generateCsvFromArray()
-    {
-        return 'host,username,password,port'."\r\n".'host2,username2,password2,port2'."\r\n".'host3,username3,password3,port3';
-    }
-
-    private function getConfig()
-    {
-        return [
-            'host' => 0,
-            'username' => 1,
-            'password' => 2,
-            'port' => 3,
-            'auth_mode' => 4,
-            'encryption' => 5,
-        ];
     }
 }
