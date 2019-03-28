@@ -11,7 +11,6 @@
 
 namespace MauticPlugin\MauticRandomSmtpBundle\Swiftmailer\Transport;
 
-use Mautic\PluginBundle\Helper\IntegrationHelper;
 use MauticPlugin\MauticRandomSmtpBundle\Randomizer\SmtpRandomizer;
 
 class RandomSmtpTransport extends \Swift_SmtpTransport
@@ -32,6 +31,8 @@ class RandomSmtpTransport extends \Swift_SmtpTransport
     public function __construct(SmtpRandomizer $smtpRandomizer, $port = 25, $security = null)
     {
         $this->smtpRandomizer = $smtpRandomizer;
+        parent::__construct('localhost');
+
     }
 
 
