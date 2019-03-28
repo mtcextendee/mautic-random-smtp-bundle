@@ -23,6 +23,7 @@ return [
                 'class'        => \MauticPlugin\MauticRandomSmtpBundle\Swiftmailer\Transport\RandomSmtpTransport::class,
                 'arguments' => [
                     'mautic.random.smtp.randomizer',
+                    'monolog.logger.mautic'
                 ],
                 'tag'          => 'mautic.email_transport',
                 'tagArguments' => [

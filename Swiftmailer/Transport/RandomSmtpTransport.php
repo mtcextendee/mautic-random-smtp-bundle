@@ -12,6 +12,7 @@
 namespace MauticPlugin\MauticRandomSmtpBundle\Swiftmailer\Transport;
 
 use MauticPlugin\MauticRandomSmtpBundle\Randomizer\SmtpRandomizer;
+use Monolog\Logger;
 
 class RandomSmtpTransport extends \Swift_SmtpTransport
 {
@@ -20,18 +21,27 @@ class RandomSmtpTransport extends \Swift_SmtpTransport
      */
     private $smtpRandomizer;
 
+    /**
+     * @var Logger
+     */
+    private $logger;
+
 
     /**
      * RandomSmtpTransport constructor.
      *
      * @param SmtpRandomizer $smtpRandomizer
-     * @param int            $port
+     * @param Logger         $logger
      * @param null           $security
+     *
      */
-    public function __construct(SmtpRandomizer $smtpRandomizer, $port = 25, $security = null)
+    public function __construct(SmtpRandomizer $smtpRandomizer, Logger $logger, $security = null)
     {
         $this->smtpRandomizer = $smtpRandomizer;
+        $this->logger = $logger;
         parent::__construct('localhost');
+        define('MAUTIC_SMTP_RANDOM_FROM_CONSTRUCTOR', 1);
+        $this->setRandomSmtpServer();
 
     }
 
@@ -47,7 +57,22 @@ class RandomSmtpTransport extends \Swift_SmtpTransport
      */
     public function send(\Swift_Mime_Message $message, &$failedRecipients = null)
     {
-        $this->smtpRandomizer->randomize();
+        if (!defined('MAUTIC_SMTP_RANDOM_FROM_CONSTRUCTOR')) {
+            $this->setRandomSmtpServer();
+        }
         parent::send($message, $failedRecipients);
+    }
+
+    /**
+     * Set random SMTP server
+     */
+    private function setRandomSmtpServer()
+    {
+        try {
+            $this->smtpRandomizer->randomize($this);
+            $this->logger->debug(sprintf('Send by random SMTP server: %s with username %s', $this->getHost(), $this->getUsername()));
+        } catch (\Exception $exception) {
+            $this->logger->error($exception->getMessage());
+        }
     }
 }

@@ -38,7 +38,7 @@ class SmtpRandomizer
         }
 
         $config = $this->config = $integration->mergeConfigToFeatureSettings();
-        $smtps = explode("\r\n", $config['smtps']);
+        $smtps = explode("\n", $config['smtps']);
         $smtp = end($smtps);
         if (empty($smtp)) {
             throw new SmtpCsvListNotExistException('Smtp CSV list not exist. Please setup it in plugin setting.');
@@ -56,16 +56,28 @@ class SmtpRandomizer
         $smtps = $this->smtps;
         shuffle($smtps);
         $smtp = end($smtps);
-
-        if (!$host = ArrayHelper::getValue($this->config['host'], $smtp)) {
-            throw new HostNotExistinCsvRowExpection('Can\'t find host on column possition '.strcmp('"$1"', $this->config['host']));
+        if (!$host = ArrayHelper::getValue($this->getConfigParamter('host'), $smtp)) {
+            throw new HostNotExistinCsvRowExpection('Can\'t find host on column possition '.sprintf('"%s"', $this->getConfigParamter('host')));
         }
+
         $randomSmtpTransport->setHost($host);
-        $randomSmtpTransport->setPort(ArrayHelper::getValue('post', $smtp, null));
-        $randomSmtpTransport->setEncryption(ArrayHelper::getValue($this->config['encryption'], $smtp, ''));
-        $randomSmtpTransport->setAuthMode(ArrayHelper::getValue($this->config['auth_mode'], $smtp, ''));
-        $randomSmtpTransport->setUsername(ArrayHelper::getValue($this->config['username'], $smtp, ''));
-        $randomSmtpTransport->setPassword(ArrayHelper::getValue($this->config['password'], $smtp, ''));
+        $randomSmtpTransport->setPort(ArrayHelper::getValue('post', $smtp, 25));
+        $randomSmtpTransport->setEncryption(ArrayHelper::getValue($this->getConfigParamter('encryption'), $smtp, ''));
+        $randomSmtpTransport->setAuthMode(ArrayHelper::getValue($this->getConfigParamter('auth_mode'), $smtp, ''));
+        $randomSmtpTransport->setUsername(ArrayHelper::getValue($this->getConfigParamter('username'), $smtp, ''));
+        $randomSmtpTransport->setPassword(ArrayHelper::getValue($this->getConfigParamter('password'), $smtp, ''));
+    }
+
+    /**
+     * @param $key
+     *
+     * @return int
+     */
+    private function getConfigParamter($key)
+    {
+        if (isset($this->config[$key]) && $this->config[$key] !== '') {
+            return (int) $this->config[$key];
+        }
     }
 
 }
