@@ -92,11 +92,80 @@ class SmtpRandomizerTest extends \PHPUnit_Framework_TestCase
         (new SmtpRandomizer($integrationHelperMock))->randomize($randomSmtpTransportMock);
     }
 
+
+    public function testhostColumnFind()
+    {
+        $integrationMock = $this->createMock(Integration::class);
+        $integrationMock->method('getIsPublished')->willReturn(true);
+
+        $smtpRandomizerIntegration = $this->createMock(RandomSmtpIntegration::class);
+        $smtpRandomizerIntegration->method('getIntegrationSettings')->willReturn($integrationMock);
+
+
+        $smtpRandomizerIntegration->method('mergeConfigToFeatureSettings')->willReturn(
+            array_merge(['smtps'=> $this->generateCsvFromArray()], $this->getConfig())
+        );
+
+        $integrationHelperMock = $this->createMock(IntegrationHelper::class);
+        $integrationHelperMock->method('getIntegrationObject')->willReturn($smtpRandomizerIntegration);
+        $randomSmtpTransportMock = $this->createMock(RandomSmtpTransport::class);
+        $randomSmtpTransportMock->method('setHost')->willReturnCallback(
+            function ($host) {
+                $this->assertTrue(isset($host));
+            });
+
+        (new SmtpRandomizer($integrationHelperMock))->randomize($randomSmtpTransportMock);
+
+    }
+
+    public function testhostColumnRandomGenerate()
+    {
+        $integrationMock = $this->createMock(Integration::class);
+        $integrationMock->method('getIsPublished')->willReturn(true);
+
+        $smtpRandomizerIntegration = $this->createMock(RandomSmtpIntegration::class);
+        $smtpRandomizerIntegration->method('getIntegrationSettings')->willReturn($integrationMock);
+
+        //host2;,username2,password2,port2";
+        $smtpRandomizerIntegration->method('mergeConfigToFeatureSettings')->willReturn(
+             array_merge(['smtps'=> $this->generateCsvFromArray()], $this->getConfig())
+        );
+        $integrationHelperMock = $this->createMock(IntegrationHelper::class);
+        $integrationHelperMock->method('getIntegrationObject')->willReturn($smtpRandomizerIntegration);
+        $randomSmtpTransportMock = $this->createMock(RandomSmtpTransport::class);
+        $results = [];
+        $randomSmtpTransportMock->method('setHost')->willReturnCallback(
+            function ($host) use (&$results) {
+                $results[] =  $host;
+            });
+
+        for ($i = 0; $i < 100; $i++) {
+            (new SmtpRandomizer($integrationHelperMock))->randomize($randomSmtpTransportMock);
+            $uniqueResultsCount = count(array_unique($results));
+            if ($uniqueResultsCount > 1) {
+                break;
+            }
+        }
+        $this->assertGreaterThan(1, $uniqueResultsCount);
+    }
+
     /**
      * @return string
      */
     private function generateCsvFromArray()
     {
         return 'host,username,password,port'."\r\n".'host2,username2,password2,port2'."\r\n".'host3,username3,password3,port3';
+    }
+
+    private function getConfig()
+    {
+        return [
+            'host' => 0,
+            'username' => 1,
+            'password' => 2,
+            'port' => 3,
+            'auth_mode' => 4,
+            'encryption' => 5,
+        ];
     }
 }

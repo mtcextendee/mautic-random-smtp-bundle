@@ -57,16 +57,15 @@ class SmtpRandomizer
         shuffle($smtps);
         $smtp = end($smtps);
 
-        if (!$host = ArrayHelper::getValue('host', $smtp)) {
+        if (!$host = ArrayHelper::getValue($this->config['host'], $smtp)) {
             throw new HostNotExistinCsvRowExpection('Can\'t find host on column possition '.strcmp('"$1"', $this->config['host']));
         }
-
         $randomSmtpTransport->setHost($host);
         $randomSmtpTransport->setPort(ArrayHelper::getValue('post', $smtp, null));
-        $randomSmtpTransport->setEncryption(ArrayHelper::getValue('encryption', $smtp, ''));
-        $randomSmtpTransport->setAuthMode(ArrayHelper::getValue('auth_mode', $smtp, ''));
-        $randomSmtpTransport->setUsername(ArrayHelper::getValue('username', $smtp, ''));
-        $randomSmtpTransport->setPassword(ArrayHelper::getValue('password', $smtp, ''));
+        $randomSmtpTransport->setEncryption(ArrayHelper::getValue($this->config['encryption'], $smtp, ''));
+        $randomSmtpTransport->setAuthMode(ArrayHelper::getValue($this->config['auth_mode'], $smtp, ''));
+        $randomSmtpTransport->setUsername(ArrayHelper::getValue($this->config['username'], $smtp, ''));
+        $randomSmtpTransport->setPassword(ArrayHelper::getValue($this->config['password'], $smtp, ''));
     }
 
 }
