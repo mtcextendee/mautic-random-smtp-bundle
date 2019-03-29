@@ -4,8 +4,15 @@ Random SMTP server support for Mautic
 
 ### Installation from command line
 
-- `composer require mtcextendee/mautic-random-smtp-bundle`
-- `php app/console mautic:plugins:reload`
+1. `composer require mtcextendee/mautic-random-smtp-bundle`
+2. `php app/console mautic:plugins:reload`
+
+### Manual installation
+
+1. Download last version https://github.com/mtcextendee/mautic-random-smtp-bundle/releases
+2. Unzip files to plugins/MauticRandomSmtpBundle
+3. Go to /s/plugins/reload
+4. See RandomSMTP plugin
 
 ### Setup plugin
 
