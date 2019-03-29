@@ -175,6 +175,35 @@ class RandomSmtpIntegration extends AbstractIntegration
                     'required'=>false
                 ]
             );
+
+            $builder->add(
+                'fromName',
+                NumberType::class,
+                [
+                    'label'      => 'mautic.random.smtp.column.from_name',
+                    'label_attr' => ['class' => 'control-label'],
+                    'attr'       => [
+                        'class'  => 'form-control',
+                        'tooltip' => 'mautic.random.smtp.column.from_name.tooltip',
+                    ],
+                    'required'=>false
+                ]
+            );
+
+
+            $builder->add(
+                'fromEmail',
+                NumberType::class,
+                [
+                    'label'      => 'mautic.random.smtp.column.from_email',
+                    'label_attr' => ['class' => 'control-label'],
+                    'attr'       => [
+                        'class'  => 'form-control',
+                        'tooltip' => 'mautic.random.smtp.column.from_email.tooltip',
+                    ],
+                    'required'=>false
+                ]
+            );
         }
     }
 }

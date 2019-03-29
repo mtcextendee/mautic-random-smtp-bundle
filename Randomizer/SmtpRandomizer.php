@@ -49,9 +49,12 @@ class SmtpRandomizer
     }
 
     /**
-     * @throws \Exception
+     * @param RandomSmtpTransport $randomSmtpTransport
+     * @param \Swift_Mime_Message  $message
+     *
+     * @throws HostNotExistinCsvRowExpection
      */
-    public function randomize(RandomSmtpTransport $randomSmtpTransport)
+    public function randomize(RandomSmtpTransport $randomSmtpTransport, \Swift_Mime_Message $message = null)
     {
         $smtps = $this->smtps;
         shuffle($smtps);
@@ -66,6 +69,11 @@ class SmtpRandomizer
         $randomSmtpTransport->setAuthMode(ArrayHelper::getValue($this->getConfigParamter('auth_mode'), $smtp, ''));
         $randomSmtpTransport->setUsername(ArrayHelper::getValue($this->getConfigParamter('username'), $smtp, ''));
         $randomSmtpTransport->setPassword(ArrayHelper::getValue($this->getConfigParamter('password'), $smtp, ''));
+
+        // change sender
+        if ($message && $fromEmail = ArrayHelper::getValue($this->getConfigParamter('fromEmail'), $smtp, false)) {
+            $message->setFrom($fromEmail, ArrayHelper::getValue($this->getConfigParamter('fromName'), $smtp, null));
+        }
     }
 
     /**
