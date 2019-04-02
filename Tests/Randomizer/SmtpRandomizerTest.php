@@ -29,7 +29,7 @@ class SmtpRandomizerTest extends \PHPUnit_Framework_TestCase
      */
     private function generateCsvFromArray()
     {
-        return 'host,username,password,port'."\r\n".'host2,username2,password2,port2'."\r\n".'host3,username3,password3,port3';
+        return 'host,username,password,port,auth_mode,encryption,fromEmail,fromName'."\r\n".'host2,username,password,port,auth_mode,encryption,fromEmail,fromName'."\r\n".'host3,username,password,port,auth_mode,encryption,fromEmail,fromName';
     }
 
     /**
@@ -44,6 +44,8 @@ class SmtpRandomizerTest extends \PHPUnit_Framework_TestCase
             'port' => 3,
             'auth_mode' => 4,
             'encryption' => 5,
+            'fromEmail' => 6,
+            'fromName' => 7,
         ];
     }
 
@@ -169,5 +171,49 @@ class SmtpRandomizerTest extends \PHPUnit_Framework_TestCase
             }
         }
         $this->assertGreaterThan(1, $uniqueResultsCount);
+    }
+
+
+    public function testAllColumnsFind()
+    {
+        $integrationMock = $this->createMock(Integration::class);
+        $integrationMock->method('getIsPublished')->willReturn(true);
+
+        $smtpRandomizerIntegration = $this->createMock(RandomSmtpIntegration::class);
+        $smtpRandomizerIntegration->method('getIntegrationSettings')->willReturn($integrationMock);
+
+
+        $smtpRandomizerIntegration->method('mergeConfigToFeatureSettings')->willReturn(
+            array_merge(['smtps'=> $this->generateCsvFromArray()], $this->getConfig())
+        );
+
+        $integrationHelperMock = $this->createMock(IntegrationHelper::class);
+        $integrationHelperMock->method('getIntegrationObject')->willReturn($smtpRandomizerIntegration);
+        $randomSmtpTransportMock = $this->createMock(RandomSmtpTransport::class);
+
+        $randomSmtpTransportMock->expects($this->once())->method('setHost')->willReturnCallback(
+        function ($host) {
+            $this->assertTrue(isset($host));
+        });
+
+        $randomSmtpTransportMock->expects($this->once())->method('setPort')->willReturnCallback(
+            function ($return) {
+                $this->assertTrue(isset($return));
+            });
+
+
+        $randomSmtpTransportMock->expects($this->once())->method('setEncryption')->willReturnCallback(
+            function ($return) {
+                $this->assertTrue(isset($return));
+            });
+
+        $messageMock = $this->createMock(\Swift_Mime_Message::class);
+        $messageMock->expects($this->once())->method('setFrom')->willReturnCallback(
+            function ($return) {
+                $this->assertTrue(isset($return));
+            });
+
+        (new SmtpRandomizer($integrationHelperMock))->randomize($randomSmtpTransportMock, $messageMock);
+
     }
 }

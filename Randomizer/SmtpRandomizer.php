@@ -26,6 +26,9 @@ class SmtpRandomizer
     /** @var  array */
     private $smtps;
 
+    /** @var  array */
+    private $smtp;
+
     /**
      * {@inheritdoc}
      */
@@ -56,9 +59,7 @@ class SmtpRandomizer
      */
     public function randomize(RandomSmtpTransport $randomSmtpTransport, \Swift_Mime_Message &$message = null)
     {
-        $smtps = $this->smtps;
-        shuffle($smtps);
-        $smtp = end($smtps);
+        $smtp = $this->getRandomSmtp();
         if (!$host = ArrayHelper::getValue($this->getConfigParamter('host'), $smtp)) {
             throw new HostNotExistinCsvRowExpection('Can\'t find host on column possition '.sprintf('"%s"', $this->getConfigParamter('host')));
         }
@@ -74,6 +75,20 @@ class SmtpRandomizer
         if ($message && $fromEmail = ArrayHelper::getValue($this->getConfigParamter('fromEmail'), $smtp, false)) {
             $message->setFrom($fromEmail, ArrayHelper::getValue($this->getConfigParamter('fromName'), $smtp, null));
         }
+    }
+
+    /**
+     * @return array
+     */
+    private function getRandomSmtp()
+    {
+        if (!$this->smtp) {
+            $smtps = $this->smtps;
+            shuffle($smtps);
+            $this->smtp  = end($smtps);
+        }
+
+        return $this->smtp;
     }
 
     /**
