@@ -64,7 +64,7 @@ class SmtpRandomizer
         }
 
         $randomSmtpTransport->setHost($host);
-        $randomSmtpTransport->setPort(ArrayHelper::getValue('post', $smtp, 25));
+        $randomSmtpTransport->setPort(ArrayHelper::getValue('port', $smtp, 25));
         $randomSmtpTransport->setEncryption(ArrayHelper::getValue($this->getConfigParamter('encryption'), $smtp, ''));
         $randomSmtpTransport->setAuthMode(ArrayHelper::getValue($this->getConfigParamter('auth_mode'), $smtp, ''));
         $randomSmtpTransport->setUsername(ArrayHelper::getValue($this->getConfigParamter('username'), $smtp, ''));

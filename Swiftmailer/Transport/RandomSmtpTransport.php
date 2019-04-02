@@ -40,7 +40,6 @@ class RandomSmtpTransport extends \Swift_SmtpTransport
         $this->smtpRandomizer = $smtpRandomizer;
         $this->logger = $logger;
         parent::__construct('localhost');
-        $this->setTimeout(30);
         $this->setRandomSmtpServer();
 
     }
