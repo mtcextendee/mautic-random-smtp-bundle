@@ -74,6 +74,7 @@ class SmtpRandomizer
         // change sender
         if ($message && $fromEmail = ArrayHelper::getValue($this->getConfigParamter('fromEmail'), $smtp, false)) {
             $message->setFrom($fromEmail, ArrayHelper::getValue($this->getConfigParamter('fromName'), $smtp, null));
+            $this->smtp = null;
         }
     }
 

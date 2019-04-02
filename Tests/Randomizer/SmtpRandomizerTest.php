@@ -163,8 +163,15 @@ class SmtpRandomizerTest extends \PHPUnit_Framework_TestCase
                 $results[] =  $host;
             });
 
+        $messageMock = $this->createMock(\Swift_Mime_Message::class);
+        $messageMock->expects($this->any())->method('setFrom')->willReturnCallback(
+            function ($return) {
+                $this->assertTrue(isset($return));
+            });
+
+        $randomizer = (new SmtpRandomizer($integrationHelperMock));
         for ($i = 0; $i < 100; $i++) {
-            (new SmtpRandomizer($integrationHelperMock))->randomize($randomSmtpTransportMock);
+             $randomizer->randomize($randomSmtpTransportMock, $messageMock);
             $uniqueResultsCount = count(array_unique($results));
             if ($uniqueResultsCount > 1) {
                 break;
