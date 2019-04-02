@@ -54,7 +54,7 @@ class SmtpRandomizer
      *
      * @throws HostNotExistinCsvRowExpection
      */
-    public function randomize(RandomSmtpTransport $randomSmtpTransport, \Swift_Mime_Message $message = null)
+    public function randomize(RandomSmtpTransport $randomSmtpTransport, \Swift_Mime_Message &$message = null)
     {
         $smtps = $this->smtps;
         shuffle($smtps);

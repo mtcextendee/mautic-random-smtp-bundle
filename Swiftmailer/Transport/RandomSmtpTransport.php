@@ -65,10 +65,10 @@ class RandomSmtpTransport extends \Swift_SmtpTransport
      *
      * @param Swift_Mime_Message $message
      */
-    private function setRandomSmtpServer(\Swift_Mime_Message $message = null)
+    private function setRandomSmtpServer(\Swift_Mime_Message &$message = null)
     {
-        $this->logger->info(sprintf('Send by random SMTP server: %s with username %s and sender email %s', $this->getHost(), $this->getUsername(), implode(',', $message ? array_keys($message->getFrom()) : [])));
         try {
+            $this->logger->info(sprintf('Send by random SMTP server: %s with username %s and sender email %s', $this->getHost(), $this->getUsername(), implode(',', $message ? array_keys($message->getFrom()) : [])));
             $this->smtpRandomizer->randomize($this, $message);
         } catch (\Exception $exception) {
             $this->logger->error($exception->getMessage());
