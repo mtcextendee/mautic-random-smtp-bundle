@@ -28,6 +28,8 @@ You can use columns:
   - port - Is not required. Default is 25
   - authenitication mode - is not required. Default is none. Other options are plain, login or cram-md5
   - encryption - is not required. Default is none. Other options are ssl or tls
+  - from email
+  - from name
 
 2. Match column number with each parameter. Start from 0
 
