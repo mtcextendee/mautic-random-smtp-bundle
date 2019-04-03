@@ -40,10 +40,9 @@ class RandomSmtpTransport extends \Swift_SmtpTransport
         $this->smtpRandomizer = $smtpRandomizer;
         $this->logger = $logger;
         parent::__construct('localhost');
-        $this->setRandomSmtpServer();
-
+        $nothing = null;
+        $this->setRandomSmtpServer($nothing, $this);
     }
-
 
 
     /**
@@ -56,20 +55,23 @@ class RandomSmtpTransport extends \Swift_SmtpTransport
      */
     public function send(\Swift_Mime_Message $message, &$failedRecipients = null)
     {
-        $this->setRandomSmtpServer($message);
-        parent::send($message, $failedRecipients);
+            $transport = new \Swift_SmtpTransport('localhost');
+            $this->setRandomSmtpServer($message, $transport);
+            $mailer = new \Swift_Mailer($transport);
+            $mailer->send($message, $failedRecipients);
     }
+
 
     /**
      * Set random SMTP server
      *
      * @param Swift_Mime_Message $message
      */
-    private function setRandomSmtpServer(\Swift_Mime_Message &$message = null)
+    private function setRandomSmtpServer(\Swift_Mime_Message &$message = null, &$transport)
     {
         try {
-            $this->smtpRandomizer->randomize($this, $message);
-            $this->logger->info(sprintf('Send by random SMTP server: %s with username %s and sender email %s', $this->getHost(), $this->getUsername(), implode(',', $message ? array_keys($message->getFrom()) : [])));
+            $this->smtpRandomizer->randomize($transport, $message);
+            $this->logger->info(sprintf('Send by random SMTP server: %s with username %s and sender email %s to %s', $this->getHost(), $this->getUsername(), implode(',', $message ? array_keys($message->getFrom()) : []), $message ? implode(', ', array_keys($message->getTo())) :''));
         } catch (\Exception $exception) {
             $this->logger->error($exception->getMessage());
         }

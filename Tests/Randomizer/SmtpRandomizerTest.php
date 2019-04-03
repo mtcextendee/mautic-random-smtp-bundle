@@ -29,7 +29,7 @@ class SmtpRandomizerTest extends \PHPUnit_Framework_TestCase
      */
     private function generateCsvFromArray()
     {
-        return 'host,username,password,port,auth_mode,encryption,fromEmail,fromName'."\r\n".'host2,username,password,port,auth_mode,encryption,fromEmail,fromName'."\r\n".'host3,username,password,port,auth_mode,encryption,fromEmail,fromName';
+        return 'host,username,password,port,auth_mode,encryption,fromEmail,fromName'."\r\n".'host2,username,password,port,auth_mode,encryption,fromEmail1,fromName'."\r\n".'host3,username,password,port,auth_mode,encryption,fromEmail2,fromName';
     }
 
     /**
@@ -162,16 +162,16 @@ class SmtpRandomizerTest extends \PHPUnit_Framework_TestCase
             function ($host) use (&$results) {
                 $results[] =  $host;
             });
-
         $messageMock = $this->createMock(\Swift_Mime_Message::class);
+        $froms = [];
         $messageMock->expects($this->any())->method('setFrom')->willReturnCallback(
-            function ($return) {
-                $this->assertTrue(isset($return));
+            function ($return) use (&$froms) {
+                $froms[] = $return;
             });
 
         $randomizer = (new SmtpRandomizer($integrationHelperMock));
         for ($i = 0; $i < 100; $i++) {
-             $randomizer->randomize($randomSmtpTransportMock, $messageMock);
+            $randomizer->randomize($randomSmtpTransportMock, $messageMock);
             $uniqueResultsCount = count(array_unique($results));
             if ($uniqueResultsCount > 1) {
                 break;

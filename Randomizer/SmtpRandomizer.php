@@ -57,7 +57,7 @@ class SmtpRandomizer
      *
      * @throws HostNotExistinCsvRowExpection
      */
-    public function randomize(RandomSmtpTransport $randomSmtpTransport, \Swift_Mime_Message &$message = null)
+    public function randomize(\Swift_SmtpTransport &$randomSmtpTransport, \Swift_Mime_Message &$message = null)
     {
         $smtp = $this->getRandomSmtp();
         if (!$host = ArrayHelper::getValue($this->getConfigParamter('host'), $smtp)) {
